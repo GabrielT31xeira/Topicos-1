@@ -1,0 +1,20 @@
+-- Table: public.carrotb
+
+-- DROP TABLE public.carrotb;
+
+CREATE TABLE public.carrotb
+(
+    id integer NOT NULL DEFAULT nextval('carrotb_id_seq'::regclass),
+    marca character varying(20) COLLATE pg_catalog."default" NOT NULL,
+    modelo character varying(20) COLLATE pg_catalog."default" NOT NULL,
+    cor character varying(20) COLLATE pg_catalog."default",
+    ano date,
+    automatico integer,
+    porta integer,
+    CONSTRAINT carrotb_pkey PRIMARY KEY (id)
+)
+
+TABLESPACE pg_default;
+
+ALTER TABLE public.carrotb
+    OWNER to topicos1;
