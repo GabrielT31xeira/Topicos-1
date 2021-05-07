@@ -8,6 +8,8 @@ import java.sql.SQLException;
 
 import javax.inject.Named;
 import applications.Util;
+import dao.CarroDAO;
+
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -27,77 +29,23 @@ public class CarroController implements Serializable {
 	private int count = 0;
 
 	public void incluir() {
-//		Connection conn = CarroController.getConnection();
-		StringBuffer sql = new StringBuffer();
-		sql.append("INSERT INTO carrotb ");
-		sql.append(" (marca, modelo, cor) ");
-		sql.append("VALUES ");
-		sql.append(" (?, ?, ?) ");
-		PreparedStatement stat = null;
-		
-		try {
-//			stat = conn.prepareStatement(sql.toString());
-			stat.setString(1, getCarro().getMarca());
-			stat.setString(2, getCarro().getModelo());
-			stat.setString(3, getCarro().getCor());
-//			stat.setObject(4, (obj.getAuto() == null ? null : obj.getAuto().getValue()));
-//			stat.setObject(5, (obj.getPorta() == null ? null : obj.getPorta().getValue()));
-
-			stat.execute();
+		CarroDAO dao = new CarroDAO();
+		if (dao.incluir(getCarro())) {
 			Util.addInfoMessage("Incluido com sucesso.");
 			limpar();
-
-		} catch (SQLException e) {
-			e.printStackTrace();
-		} finally {
-			try {
-				stat.close();
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-			try {
-//				conn.close();
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}	
+		} else {
+			Util.addErrorMessage("Deu ruim");
+		}
 	}
 
 	public void alterar() {
-//		Connection conn = CarroController.getConnection();
-		StringBuffer sql = new StringBuffer();
-		sql.append("UPDATE carrotb SET");
-		sql.append(" marca = ?, ");
-		sql.append(" modelo = ?, ");
-		sql.append(" cor = ? ");
-		sql.append("WHERE ");
-		sql.append(" id = ?");
-		
-		PreparedStatement stat = null;
-		try {
-//			stat = conn.prepareStatement(sql.toString());
-			stat.setString(1, getCarro().getMarca());
-			stat.setString(2, getCarro().getModelo());
-			stat.setString(3, getCarro().getCor());
-			
-			stat.execute();
+		CarroDAO dao = new CarroDAO();
+		if (dao.alterar(getCarro())) {
+			Util.addInfoMessage("Alterado com sucesso.");
 			limpar();
-			Util.addInfoMessage("Sucesso ao alterar");
-		} catch (Exception e) {
-			System.out.println("Erro ao realizar um comando sql de insert.");
-			e.printStackTrace();
-		} finally {
-			try {
-				stat.close();
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-			try {
-//				conn.close();
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}	
+		} else {
+			Util.addErrorMessage("Deu ruim");
+		}
 	}
 
 	public void excluir() {
@@ -107,8 +55,9 @@ public class CarroController implements Serializable {
 	}
 
 	public void excluir(Carro carro) {
-		listCarro.remove(carro);
-		Util.addInfoMessage("Sucesso ao excluir");
+		CarroDAO dao = new CarroDAO();
+		dao.excluir(carro.getId());
+		limpar();
 	}
 
 	public void limpar() {
@@ -117,7 +66,8 @@ public class CarroController implements Serializable {
 	}
 
 	public void editar(Carro carro) {
-		setCarro(carro.getClone());
+		CarroDAO dao = new CarroDAO();
+		setCarro(dao.obterUm(carro.getId()));
 	}
 
 	public Automatico[] getListaAutomatico() {
@@ -141,51 +91,14 @@ public class CarroController implements Serializable {
 
 	public List<Carro> getListCarro() {
 		if (listCarro == null) {
-			listCarro = new ArrayList<Carro>();
-//			Connection conn = CarroController.getConnection();
-			StringBuffer sql = new StringBuffer();
-			sql.append("SELECT ");
-			sql.append(" c.id, ");
-			sql.append(" c.marca, ");
-			sql.append(" c.modelo, ");
-			sql.append(" c.cor ");
-//			sql.append(" c.automatico ");
-//			sql.append(" c.porta ");
-			sql.append("FROM ");
-			sql.append(" carrotb c");
-
-			PreparedStatement stat = null;
-
-			try {
-//				stat = conn.prepareStatement(sql.toString());
-				ResultSet rs = stat.executeQuery();	
-				while(rs.next()) {
-					Carro carro = new Carro();
-					carro.setId(rs.getInt("id"));
-					carro.setMarca(rs.getString("marca"));
-					carro.setModelo(rs.getString("modelo"));
-					carro.setCor(rs.getString("cor"));
-//					carro.setAuto(Automatico.valueOf(rs.getInt("automatico")));
-//					carro.setPorta(Porta.valueOf(rs.getInt("porta")));
-
-					listCarro.add(carro);
-				}
-			} catch (SQLException e) {
-				e.printStackTrace();
-			} finally {
-				try {
-					stat.close();
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-				try {
-//					conn.close();
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
+			CarroDAO dao = new CarroDAO();
+			listCarro = dao.obterTodos();
+			if (listCarro == null) {
+				listCarro = new ArrayList<Carro>();
 			}
 		}
 		return listCarro;
+
 	}
 
 	public void setListCarro(List<Carro> listCarro) {

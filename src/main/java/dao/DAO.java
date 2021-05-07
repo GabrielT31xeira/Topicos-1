@@ -9,11 +9,11 @@ import models.Carro;
 
 public interface DAO {
 	
-	public void incluir(Carro obj);
-	public void alterar(Carro obj);
-	public void excluir(Integer id);
+	public boolean incluir(Carro obj);
+	public boolean alterar(Carro obj);
+	public boolean excluir(Integer id);
 	public List<Carro> obterTodos();
-	public Carro obterUm();
+	public Carro obterUm(Integer id);
 	
 	public static Connection getConnection() {
 		try {
