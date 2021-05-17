@@ -26,7 +26,6 @@ public class CarroController implements Serializable {
 	private static final long serialVersionUID = 2815736461208953545L;
 	private Carro carro = null;
 	private List<Carro> listCarro;
-	private int count = 0;
 
 	public void incluir() {
 		CarroDAO dao = new CarroDAO();
